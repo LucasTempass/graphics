@@ -31,7 +31,6 @@ public class Main {
 			throw new IllegalStateException("Não foi possível iniciar o GLFW");
 		}
 
-
 		GLFW.glfwDefaultWindowHints();
 		glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -40,7 +39,7 @@ public class Main {
 
 		// Create the window
 		window = GLFW.glfwCreateWindow(
-				300, 300,
+				800, 800,
 				"Lucas Tempass Cerveira",
 				NULL, NULL
 		);
@@ -97,7 +96,9 @@ public class Main {
 	private void loop() {
 		var shader = new Shader("Vertex.vsh", "Fragment.fsh");
 
-		var triangleVAO = setupGeometry(triangle(0, 0, 0.5f));
+		var triangleVAO = setupGeometry(triangle(0, 0, 0.25f));
+		var triangleOutlineVAO = setupGeometry(triangle(0, 0, 0.5f));
+		var trianglePointsVAO = setupGeometry(triangle(0, 0, 0.75f));
 
 		shader.use();
 
@@ -108,15 +109,25 @@ public class Main {
 			glClearColor(0.3f, 0.2f, 0.3f, 1f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
-			glLineWidth(5.0f);
+			glLineWidth(2.0f);
+			glPointSize(6.0f);
 
 			shader.setVec4("inputColor", 1.0f, 1.0f, 1.0f, 1.0f);
 
 			triangleVAO.bind();
-
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			glDrawArrays(GL_TRIANGLES, 0, 3);
-
 			triangleVAO.unbind();
+
+			triangleOutlineVAO.bind();
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glDrawArrays(GL_TRIANGLES, 0, 3);
+			triangleOutlineVAO.unbind();
+
+			trianglePointsVAO.bind();
+			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+			glDrawArrays(GL_TRIANGLES, 0, 3);
+			trianglePointsVAO.unbind();
 
 			// troca o buffer ativo por aquele que acabamos de desenhar
 			glfwSwapBuffers(window);
