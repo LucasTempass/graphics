@@ -108,6 +108,8 @@ public class Main {
 			glClearColor(0.3f, 0.2f, 0.3f, 1f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
+			glLineWidth(5.0f);
+
 			shader.setVec4("inputColor", 1.0f, 1.0f, 1.0f, 1.0f);
 
 			triangleVAO.bind();

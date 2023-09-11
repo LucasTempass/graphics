@@ -16,6 +16,13 @@ public class Geometry {
 	private static final int COLOR_ATTRIBUTE = 1;
 	private static final long COLORS_OFFSET = 3L;
 
+	private static final int X_POSITION = 0;
+	private static final int Y_POSITION = 1;
+	private static final int Z_POSITION = 2;
+	private static final int RED_POSITION = 3;
+	private static final int GREEN_POSITION = 4;
+	private static final int BLUE_POSITION = 5;
+
 	public static VAO setupGeometry(float[] vertices) {
 		var vao = new VAO();
 		vao.bind();
@@ -39,13 +46,15 @@ public class Geometry {
 	}
 
 
-	public static void addPoint(float[] vertices, int i, float x, float y, Vector3f color) {
-		vertices[i++] = x; //x
-		vertices[i++] = y; //y
-		vertices[i++] = 0.0f; //z
-		vertices[i++] = color.x; //r
-		vertices[i++] = color.y; //g
-		vertices[i] = color.z; //b
+	public static void addVertex(float[] vertices, int offset, float x, float y, Vector3f color) {
+		// inicia no indice 0, com 3 floats para a coordenadas
+		vertices[offset + X_POSITION] = x;
+		vertices[offset + Y_POSITION] = y;
+		vertices[offset + Z_POSITION] = 0.0f;
+		// últimos 3 indices para a cor
+		vertices[offset + RED_POSITION] = color.x;
+		vertices[offset + GREEN_POSITION] = color.y;
+		vertices[offset + BLUE_POSITION] = color.z;
 	}
 
 	public static float[] mergeVertices(float[] v0, float[] v1) {
@@ -70,7 +79,7 @@ public class Geometry {
 			float y = centerY + radius * (float) Math.sin(Math.toRadians(theta));
 
 			//add point
-			addPoint(vertices, i * 6, x, y, Colors.get());
+			addVertex(vertices, i * 6, x, y, Colors.get());
 		}
 
 		return vertices;
@@ -78,7 +87,7 @@ public class Geometry {
 
 	public static float[] circle(float centerX, float centerY, float radius, int points, float rotation) {
 		float[] vertices = new float[points * 6];
-		addPoint(vertices, 0, centerX, centerY, Colors.get());
+		addVertex(vertices, 0, centerX, centerY, Colors.get());
 
 		//angle between points
 		float angle = 360.0f / (points - 2);
@@ -92,7 +101,7 @@ public class Geometry {
 			float y = centerY + radius * (float) Math.sin(Math.toRadians(theta));
 
 			//add point
-			addPoint(vertices, (i + 1) * 6, x, y, Colors.get());
+			addVertex(vertices, (i + 1) * 6, x, y, Colors.get());
 		}
 
 		return vertices;
@@ -101,7 +110,7 @@ public class Geometry {
 	public static float[] spiral(float centerX, float centerY, int points, float loops, float radius, float rotation) {
 		float[] vertices = new float[points * 6];
 
-		addPoint(vertices, 0, centerX, centerY, Colors.get());
+		addVertex(vertices, 0, centerX, centerY, Colors.get());
 
 		//angle between points
 		float ratio = loops / (points - 1);
@@ -117,7 +126,7 @@ public class Geometry {
 			float y = centerY + (float) Math.sin(angle) * magnitude;
 
 			//add point
-			addPoint(vertices, i * 6, x, y, Colors.get());
+			addVertex(vertices, i * 6, x, y, Colors.get());
 		}
 
 		return vertices;
