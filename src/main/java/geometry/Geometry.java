@@ -14,25 +14,27 @@ public class Geometry {
 
 	public static final int FLOAT_SIZE = 4;
 
+	private static final int POSITION_ATTRIBUTE = 0;
+	private static final int COLOR_ATTRIBUTE = 1;
+
 	public static int setupGeometry(float[] vertices) {
-		int VBO = glGenBuffers();
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		int vao = glGenVertexArrays();
+		glBindVertexArray(vao);
+
+		int vbo = glGenBuffers();
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
 
-		int VAO = glGenVertexArrays();
-		glBindVertexArray(VAO);
+		glVertexAttribPointer(POSITION_ATTRIBUTE, 3, GL_FLOAT, false, 6 * FLOAT_SIZE, 0);
+		glEnableVertexAttribArray(POSITION_ATTRIBUTE);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, false, 6 * FLOAT_SIZE, 0);
-		glEnableVertexAttribArray(0);
-
-		glVertexAttribPointer(1, 3, GL_FLOAT, false, 6 * FLOAT_SIZE, 3 * FLOAT_SIZE);
-		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(COLOR_ATTRIBUTE, 3, GL_FLOAT, false, 6 * FLOAT_SIZE, 3L * FLOAT_SIZE);
+		glEnableVertexAttribArray(COLOR_ATTRIBUTE);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 		glBindVertexArray(0);
 
-		return VAO;
+		return vao;
 	}
 
 	public static void addPoint(float[] vertices, int i, float x, float y, Vector3f color) {

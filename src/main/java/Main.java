@@ -6,14 +6,12 @@ import org.lwjgl.system.*;
 import shaders.Shader;
 
 import java.nio.*;
-import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 
 public class Main {
 
@@ -100,7 +98,7 @@ public class Main {
 	private void loop() {
 		var shader = new Shader("Vertex.vsh", "Fragment.fsh");
 
-		int triangle = setupGeometry(triangle(0, 0, 0.5f));
+		int triangleVAO = setupGeometry(triangle(0, 0, 0.5f));
 
 		shader.use();
 
@@ -110,18 +108,11 @@ public class Main {
 			glClearColor(0.3f, 0.2f, 0.3f, 1f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
-			glLineWidth(10);
-			glPointSize(20);
-
 			shader.setVec4("inputColor", 1.0f, 1.0f, 1.0f, 1.0f);
 
-			glBindVertexArray(triangle);
-			glDrawArrays(GL_TRIANGLES, 0, 6);
+			glBindVertexArray(triangleVAO);
+			glDrawArrays(GL_TRIANGLES, 0, 3);
 
-			shader.setVec4("inputColor", 1.0f, 0.0f, 0.0f, 1.0f);
-			glDrawArrays(GL_LINE_LOOP, 3, 3);
-
-			// unbind VAO
 			glBindVertexArray(0);
 
 			// end render
