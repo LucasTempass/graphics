@@ -2,13 +2,11 @@ package geometry;
 
 
 import org.joml.Vector3f;
+import utils.VAO;
+import utils.VBO;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 
 public class Geometry {
 
@@ -16,26 +14,30 @@ public class Geometry {
 
 	private static final int POSITION_ATTRIBUTE = 0;
 	private static final int COLOR_ATTRIBUTE = 1;
+	private static final long COLORS_OFFSET = 3L;
 
-	public static int setupGeometry(float[] vertices) {
-		int vao = glGenVertexArrays();
-		glBindVertexArray(vao);
+	public static VAO setupGeometry(float[] vertices) {
+		var vao = new VAO();
+		vao.bind();
 
-		int vbo = glGenBuffers();
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
+		var vbo = new VBO();
+		vbo.bind();
 
-		glVertexAttribPointer(POSITION_ATTRIBUTE, 3, GL_FLOAT, false, 6 * FLOAT_SIZE, 0);
-		glEnableVertexAttribArray(POSITION_ATTRIBUTE);
+		// associa os dados do vertices ao VBO
+		vbo.setData(vertices, GL_STATIC_DRAW);
 
-		glVertexAttribPointer(COLOR_ATTRIBUTE, 3, GL_FLOAT, false, 6 * FLOAT_SIZE, 3L * FLOAT_SIZE);
-		glEnableVertexAttribArray(COLOR_ATTRIBUTE);
+		// usa os 3 primieros floats para a posição
+		vao.setAttribute(POSITION_ATTRIBUTE, 3, GL_FLOAT, 6 * FLOAT_SIZE, 0);
 
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
+		// usa os 3 ultimos floats para a cor
+		vao.setAttribute(COLOR_ATTRIBUTE, 3, GL_FLOAT, 6 * FLOAT_SIZE, COLORS_OFFSET * FLOAT_SIZE);
+
+		vbo.unbind();
+		vao.unbind();
 
 		return vao;
 	}
+
 
 	public static void addPoint(float[] vertices, int i, float x, float y, Vector3f color) {
 		vertices[i++] = x; //x

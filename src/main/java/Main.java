@@ -1,17 +1,16 @@
-import static geometry.Geometry.*;
-
-import org.lwjgl.glfw.*;
+import org.lwjgl.glfw.Callbacks;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.system.*;
+import org.lwjgl.system.MemoryStack;
 import shaders.Shader;
 
-import java.nio.*;
-
+import static geometry.Geometry.setupGeometry;
+import static geometry.Geometry.triangle;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.system.MemoryStack.*;
-import static org.lwjgl.system.MemoryUtil.*;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Main {
 
@@ -34,7 +33,7 @@ public class Main {
 
 
 		GLFW.glfwDefaultWindowHints();
-		glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE); // the window will be resizable
+		glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -65,12 +64,12 @@ public class Main {
 		GL.createCapabilities();
 
 		try (MemoryStack stack = stackPush()) {
-			IntBuffer pWidth = stack.mallocInt(1);
-			IntBuffer pHeight = stack.mallocInt(1);
+			var pWidth = stack.mallocInt(1);
+			var pHeight = stack.mallocInt(1);
 
 			glfwGetFramebufferSize(window, pWidth, pHeight);
 			glViewport(0, 0, pWidth.get(0), pHeight.get(0));
-		} //the stack frame is popped automatically
+		}
 
 		GLFW.glfwMakeContextCurrent(window);
 
@@ -98,11 +97,12 @@ public class Main {
 	private void loop() {
 		var shader = new Shader("Vertex.vsh", "Fragment.fsh");
 
-		int triangleVAO = setupGeometry(triangle(0, 0, 0.5f));
+		var triangleVAO = setupGeometry(triangle(0, 0, 0.5f));
 
 		shader.use();
 
-		while (!GLFW.glfwWindowShouldClose(window)) {
+		while (!glfwWindowShouldClose(window)) {
+			// buscar eventos de input
 			glfwPollEvents();
 
 			glClearColor(0.3f, 0.2f, 0.3f, 1f);
@@ -110,13 +110,14 @@ public class Main {
 
 			shader.setVec4("inputColor", 1.0f, 1.0f, 1.0f, 1.0f);
 
-			glBindVertexArray(triangleVAO);
+			triangleVAO.bind();
+
 			glDrawArrays(GL_TRIANGLES, 0, 3);
 
-			glBindVertexArray(0);
+			triangleVAO.unbind();
 
-			// end render
-			GLFW.glfwSwapBuffers(window);
+			// troca o buffer ativo por aquele que acabamos de desenhar
+			glfwSwapBuffers(window);
 		}
 	}
 }
