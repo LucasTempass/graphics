@@ -5,8 +5,8 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import shaders.Shader;
 
-import static geometry.Geometry.polygon;
-import static geometry.Geometry.setupGeometryWithEBO;
+import static geometry.Geometry.setupGeometry;
+import static geometry.Geometry.spiral;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -97,11 +97,9 @@ public class Main {
 	private void loop() {
 		var shader = new Shader("Vertex.vsh", "Fragment.fsh");
 
-		var points = 5;
+		var points = 1800;
 
-		float[] vertices = polygon(0, 0, 0.5f, points, 90);
-
-		var pentagonVAO = setupGeometryWithEBO(vertices);
+		var pentagonVAO = setupGeometry(spiral(0, 0, points, 3f, 0.5f));
 
 		shader.use();
 
@@ -113,12 +111,13 @@ public class Main {
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			glLineWidth(5.0f);
+			glPointSize(5.0f);
 
 			shader.setVec4("inputColor", 1.0f, 1.0f, 1.0f, 1.0f);
 
 			pentagonVAO.bind();
 
-			glDrawElements(GL_TRIANGLES, vertices.length, GL_UNSIGNED_INT, 0);
+			glDrawArrays(GL_POINTS, 0, points);
 
 			pentagonVAO.unbind();
 

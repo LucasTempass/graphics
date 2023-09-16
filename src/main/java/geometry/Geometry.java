@@ -180,48 +180,26 @@ public class Geometry {
 		return vertices;
 	}
 
-	public static float[] circle(float centerX, float centerY, float radius, int angles, float rotation) {
-		// (centro + pontos) * 6 floats por ponto
-		float[] vertices = new float[(angles + 1) * 6];
-
-		// centro
-		addVertex(vertices, 0, centerX, centerY, Colors.get());
-
-		for (int i = 1; i <= angles; i++) {
-			float theta = i + rotation;
-
-			float cos = (float) Math.cos(Math.toRadians(theta));
-			float sin = (float) Math.sin(Math.toRadians(theta));
-
-			float x = centerX + (radius * cos);
-			float y = centerY + (radius * sin);
-
-			addVertex(vertices, i * 6, x, y, Colors.get());
-		}
-
-		return vertices;
-	}
-
-	public static float[] spiral(float centerX, float centerY, int points, float loops, float radius, float rotation) {
+	public static float[] spiral(float centerX, float centerY, int points, float loops, float radius) {
 		float[] vertices = new float[points * 6];
 
-		addVertex(vertices, 0, centerX, centerY, Colors.get());
+		addVertex(vertices, 0, centerX, centerY, Colors.WHITE.color);
 
-		//angle between points
-		float ratio = loops / (points - 1);
+		// angle between points
+		var ratio = loops / (points - 1);
+
+		var tau = Math.PI * 2;
 
 		for (int i = 1; i < points; i++) {
-			//current angle
-			float j = i * ratio;
-			float angle = j * (float) (Math.PI * 2 + Math.toRadians(rotation));
-			float magnitude = j * radius / loops;
+			float theta = i * ratio;
+			float angle = theta * (float) tau;
+			float magnitude = theta * radius / loops;
 
-			//calculate xy
 			float x = centerX + (float) Math.cos(angle) * magnitude;
 			float y = centerY + (float) Math.sin(angle) * magnitude;
 
 			//add point
-			addVertex(vertices, i * 6, x, y, Colors.get());
+			addVertex(vertices, i * 6, x, y, Colors.WHITE.color);
 		}
 
 		return vertices;
