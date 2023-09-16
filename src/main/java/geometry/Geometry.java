@@ -180,15 +180,38 @@ public class Geometry {
 		return vertices;
 	}
 
-	public static float[] circle(float centerX, float centerY, float radius, int angles, float rotation, Vector3f color) {
-		// (centro + pontos) * 6 floats por ponto
-		float[] vertices = new float[(angles + 1) * 6];
+	public static float[] circle(float centerX, float centerY, float radius, float rotation, Vector3f color) {
+		int fullCircle = 360;
+
+		float[] vertices = new float[(fullCircle + 1) * 6];
 
 		// centro
 		addVertex(vertices, 0, centerX, centerY, color);
 
-		for (int i = 1; i <= angles; i++) {
+		for (int i = 1; i <= fullCircle; i++) {
 			float theta = i + rotation;
+
+			float cos = (float) Math.cos(Math.toRadians(theta));
+			float sin = (float) Math.sin(Math.toRadians(theta));
+
+			float x = centerX + (radius * cos);
+			float y = centerY + (radius * sin);
+
+			addVertex(vertices, i * 6, x, y, color);
+		}
+
+		return vertices;
+	}
+
+	public static float[] pacman(float centerX, float centerY, float radius, int angles, Vector3f color) {
+		float[] vertices = new float[angles * 6];
+
+		addVertex(vertices, 0, centerX, centerY, color);
+
+		float ratio = 360f / angles;
+
+		for (int i = 1; i < angles; i++) {
+			float theta = ratio * i;
 
 			float cos = (float) Math.cos(Math.toRadians(theta));
 			float sin = (float) Math.sin(Math.toRadians(theta));

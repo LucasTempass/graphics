@@ -96,14 +96,11 @@ public class Main {
 	private void loop() {
 		var shader = new Shader("Vertex.vsh", "Fragment.fsh");
 
-		float[] pizzaVertices = circle(0, 0, 0.5f, 60, 60, Colors.YELLOW.getColor());
-		var pizzaVAO = setupGeometryWithEBO(pizzaVertices);
+		int count = 10;
+		var pacmanVAO = setupGeometryWithEBO(pacman(0, 0, 0.5f, count, Colors.YELLOW.getColor()));
 
-		var pepperoniVertices = circle(0.07f, 0.30f, 0.05f, 360, 0, Colors.RED.getColor());
-		var pepperoniVAO = setupGeometryWithEBO(pepperoniVertices);
-
-		var pepperoniVertices2 = circle(-0.05f, 0.25f, 0.05f, 360, 0, Colors.RED.getColor());
-		var pepperoniVAO2 = setupGeometryWithEBO(pepperoniVertices2);
+		float[] circleVertices = circle(0.075f, 0.25f, 0.05f, 0, Colors.YELLOW.getColor());
+		var eye = setupGeometry(circleVertices);
 
 		shader.use();
 
@@ -118,23 +115,19 @@ public class Main {
 
 			shader.setVec4("inputColor", 1.0f, 1.0f, 1.0f, 1.0f);
 
-			pizzaVAO.bind();
+			pacmanVAO.bind();
 
-			glDrawElements(GL_TRIANGLES, pizzaVertices.length, GL_UNSIGNED_INT, 0);
+			glDrawArrays(GL_LINE_LOOP, 0, count);
 
-			pizzaVAO.unbind();
+			pacmanVAO.unbind();
 
-			pepperoniVAO.bind();
+			eye.bind();
 
-			glDrawElements(GL_TRIANGLES, pepperoniVertices.length, GL_UNSIGNED_INT, 0);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-			pepperoniVAO.unbind();
+			glDrawArrays(GL_LINE_LOOP, 0, circleVertices.length / 6);
 
-			pepperoniVAO2.bind();
-
-			glDrawElements(GL_TRIANGLES, pepperoniVertices2.length, GL_UNSIGNED_INT, 0);
-
-			pepperoniVAO2.unbind();
+			eye.unbind();
 
 			// troca o buffer ativo por aquele que acabamos de desenhar
 			glfwSwapBuffers(window);
