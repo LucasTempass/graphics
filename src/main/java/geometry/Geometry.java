@@ -2,6 +2,7 @@ package geometry;
 
 
 import org.joml.Vector3f;
+import utils.EBO;
 import utils.VAO;
 import utils.VBO;
 
@@ -33,7 +34,7 @@ public class Geometry {
 		// associa os dados do vertices ao VBO
 		vbo.setData(vertices, GL_STATIC_DRAW);
 
-		// usa os 3 primieros floats para a posição
+		// usa os 3 primeiros floats para a posição
 		vao.setAttribute(POSITION_ATTRIBUTE, 3, GL_FLOAT, 6 * FLOAT_SIZE, 0);
 
 		// usa os 3 ultimos floats para a cor
@@ -43,6 +44,58 @@ public class Geometry {
 		vao.unbind();
 
 		return vao;
+	}
+
+
+	public static VAO setupGeometryWithEBO(float[] vertices) {
+		var vao = new VAO();
+		vao.bind();
+
+		var vbo = new VBO();
+		vbo.bind();
+
+		// associa os dados do vertices ao VBO
+		vbo.setData(vertices, GL_STATIC_DRAW);
+
+		var ebo = new EBO();
+		ebo.bind();
+
+		// associa os dados dos elementos ao EBO
+		var elements = getElementsFrom(vertices);
+		ebo.setElements(elements);
+
+		// usa os 3 primeiros floats para a posição
+		vao.setAttribute(POSITION_ATTRIBUTE, 3, GL_FLOAT, 6 * FLOAT_SIZE, 0);
+
+		// usa os 3 ultimos floats para a cor
+		vao.setAttribute(COLOR_ATTRIBUTE, 3, GL_FLOAT, 6 * FLOAT_SIZE, COLORS_OFFSET * FLOAT_SIZE);
+
+		vbo.unbind();
+		vao.unbind();
+		ebo.unbind();
+
+		return vao;
+	}
+
+	private static int[] getElementsFrom(float[] vertices) {
+		// quantidade de vertices menos o centro
+		var amount = (vertices.length / 6) - 1;
+
+		// cada triangulo tem 3 vertices
+		int verticesPerElement = 3;
+
+		var elements = new int[amount * verticesPerElement];
+
+		for (int i = 0; i < amount; i++) {
+			var elementIndex = i * verticesPerElement;
+			// quando ultrapassa o tamanho do array, volta para o primeiro vertice sem ser o centro
+			elements[elementIndex + 2] = ((i + 1) % amount) + 1;
+			elements[elementIndex + 1] = i + 1;
+			// sempre utiliza o centro como vertice
+			elements[elementIndex] = 0;
+		}
+
+		return elements;
 	}
 
 
@@ -65,43 +118,32 @@ public class Geometry {
 	}
 
 	public static float[] triangle(float centerX, float centerY, float radius) {
-		float[] vertices = new float[3 * 6];
-
-		//angle between points
-		float angle = 360.0f / 3;
-
-		for (int i = 0; i < 3; i++) {
-			//current angle
-			float theta = angle * i + 90f;
-
-			//calculate xy
-			float x = centerX + radius * (float) Math.cos(Math.toRadians(theta));
-			float y = centerY + radius * (float) Math.sin(Math.toRadians(theta));
-
-			//add point
-			addVertex(vertices, i * 6, x, y, Colors.get());
-		}
-
-		return vertices;
+		return polygon(centerX, centerY, radius, 3, 90);
 	}
 
-	public static float[] circle(float centerX, float centerY, float radius, int points, float rotation) {
-		float[] vertices = new float[points * 6];
+	public static float[] square(float centerX, float centerY, float radius) {
+		return polygon(centerX, centerY, radius, 4, 45);
+	}
+
+	public static float[] polygon(float centerX, float centerY, float radius, int points, float rotation) {
+		// (centro + pontos) * 6 floats por ponto
+		float[] vertices = new float[(points + 1) * 6];
+
+		float angulo = 360.0f / points;
+
+		// centro
 		addVertex(vertices, 0, centerX, centerY, Colors.get());
 
-		//angle between points
-		float angle = 360.0f / (points - 2);
+		for (int i = 1; i <= points; i++) {
+			float theta = (angulo * i) + rotation;
 
-		for (int i = 0; i < points - 1; i++) {
-			//current angle
-			float theta = angle * i + rotation;
+			float cos = (float) Math.cos(Math.toRadians(theta));
+			float sin = (float) Math.sin(Math.toRadians(theta));
 
-			//calculate xy
-			float x = centerX + radius * (float) Math.cos(Math.toRadians(theta));
-			float y = centerY + radius * (float) Math.sin(Math.toRadians(theta));
+			float x = centerX + (radius * cos);
+			float y = centerY + (radius * sin);
 
-			//add point
-			addVertex(vertices, (i + 1) * 6, x, y, Colors.get());
+			addVertex(vertices, i * 6, x, y, Colors.get());
 		}
 
 		return vertices;
@@ -133,14 +175,7 @@ public class Geometry {
 	}
 
 	public enum Colors {
-		PINK(0xFF72AD),
-		PURPLE(0xAD72FF),
-		BLUE(0x72ADFF),
-		CYAN(0x72FFAD),
-		GREEN(0x72FF72),
-		YELLOW(0xFFFF72),
-		ORANGE(0xFFAD72),
-		RED(0xFF7272);
+		PINK(0xFF72AD), PURPLE(0xAD72FF), BLUE(0x72ADFF), CYAN(0x72FFAD), GREEN(0x72FF72), YELLOW(0xFFFF72), ORANGE(0xFFAD72), RED(0xFF7272);
 
 		private static int last = (int) Math.floor(Math.random() * values().length);
 
