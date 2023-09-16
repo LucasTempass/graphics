@@ -5,8 +5,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import shaders.Shader;
 
-import static geometry.Geometry.setupGeometryWithEBO;
-import static geometry.Geometry.triangleIsosceles;
+import static geometry.Geometry.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -97,7 +96,14 @@ public class Main {
 	private void loop() {
 		var shader = new Shader("Vertex.vsh", "Fragment.fsh");
 
-		var triangleVAO = setupGeometryWithEBO(triangleIsosceles(0, 0, 0.5f, 80, 60));
+		float[] pizzaVertices = circle(0, 0, 0.5f, 60, 60, Colors.YELLOW.getColor());
+		var pizzaVAO = setupGeometryWithEBO(pizzaVertices);
+
+		var pepperoniVertices = circle(0.07f, 0.30f, 0.05f, 360, 0, Colors.RED.getColor());
+		var pepperoniVAO = setupGeometryWithEBO(pepperoniVertices);
+
+		var pepperoniVertices2 = circle(-0.05f, 0.25f, 0.05f, 360, 0, Colors.RED.getColor());
+		var pepperoniVAO2 = setupGeometryWithEBO(pepperoniVertices2);
 
 		shader.use();
 
@@ -112,11 +118,23 @@ public class Main {
 
 			shader.setVec4("inputColor", 1.0f, 1.0f, 1.0f, 1.0f);
 
-			triangleVAO.bind();
+			pizzaVAO.bind();
 
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+			glDrawElements(GL_TRIANGLES, pizzaVertices.length, GL_UNSIGNED_INT, 0);
 
-			triangleVAO.unbind();
+			pizzaVAO.unbind();
+
+			pepperoniVAO.bind();
+
+			glDrawElements(GL_TRIANGLES, pepperoniVertices.length, GL_UNSIGNED_INT, 0);
+
+			pepperoniVAO.unbind();
+
+			pepperoniVAO2.bind();
+
+			glDrawElements(GL_TRIANGLES, pepperoniVertices2.length, GL_UNSIGNED_INT, 0);
+
+			pepperoniVAO2.unbind();
 
 			// troca o buffer ativo por aquele que acabamos de desenhar
 			glfwSwapBuffers(window);

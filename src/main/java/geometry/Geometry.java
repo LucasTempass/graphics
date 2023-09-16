@@ -180,12 +180,12 @@ public class Geometry {
 		return vertices;
 	}
 
-	public static float[] circle(float centerX, float centerY, float radius, int angles, float rotation) {
+	public static float[] circle(float centerX, float centerY, float radius, int angles, float rotation, Vector3f color) {
 		// (centro + pontos) * 6 floats por ponto
 		float[] vertices = new float[(angles + 1) * 6];
 
 		// centro
-		addVertex(vertices, 0, centerX, centerY, Colors.get());
+		addVertex(vertices, 0, centerX, centerY, color);
 
 		for (int i = 1; i <= angles; i++) {
 			float theta = i + rotation;
@@ -196,7 +196,7 @@ public class Geometry {
 			float x = centerX + (radius * cos);
 			float y = centerY + (radius * sin);
 
-			addVertex(vertices, i * 6, x, y, Colors.get());
+			addVertex(vertices, i * 6, x, y, color);
 		}
 
 		return vertices;
