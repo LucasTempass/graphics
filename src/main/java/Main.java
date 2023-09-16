@@ -5,8 +5,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import shaders.Shader;
 
-import static geometry.Geometry.setupGeometry;
-import static geometry.Geometry.spiral;
+import static geometry.Geometry.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -97,9 +96,24 @@ public class Main {
 	private void loop() {
 		var shader = new Shader("Vertex.vsh", "Fragment.fsh");
 
-		var points = 1800;
+		float[] vertices = new float[5 * 6];
 
-		var pentagonVAO = setupGeometry(spiral(0, 0, points, 3f, 0.5f));
+		addVertexAt(vertices, 0, -0.5f, 0.5f, Colors.WHITE.getColor());
+		addVertexAt(vertices, 1, -0.5f, -0.5f, Colors.WHITE.getColor());
+		addVertexAt(vertices, 2, 0.5f, -0.5f, Colors.WHITE.getColor());
+		addVertexAt(vertices, 3, 0.5f, 0.5f, Colors.WHITE.getColor());
+		addVertexAt(vertices, 4, 0, 0.9f, Colors.WHITE.getColor());
+
+		int[] elements = {
+				0, 1,
+				0, 3,
+				1, 2,
+				2, 3,
+				0, 4,
+				3, 4
+		};
+
+		var vao = setupGeometryWithEBO(vertices, elements);
 
 		shader.use();
 
@@ -115,11 +129,11 @@ public class Main {
 
 			shader.setVec4("inputColor", 1.0f, 1.0f, 1.0f, 1.0f);
 
-			pentagonVAO.bind();
+			vao.bind();
 
-			glDrawArrays(GL_POINTS, 0, points);
+			glDrawElements(GL_LINES, elements.length, GL_UNSIGNED_INT, 0);
 
-			pentagonVAO.unbind();
+			vao.unbind();
 
 			// troca o buffer ativo por aquele que acabamos de desenhar
 			glfwSwapBuffers(window);

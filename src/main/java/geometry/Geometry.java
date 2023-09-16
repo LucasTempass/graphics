@@ -48,6 +48,10 @@ public class Geometry {
 
 
 	public static VAO setupGeometryWithEBO(float[] vertices) {
+		return setupGeometryWithEBO(vertices, getElementsFrom(vertices));
+	}
+
+	public static VAO setupGeometryWithEBO(float[] vertices, int[] elements) {
 		var vao = new VAO();
 		vao.bind();
 
@@ -61,7 +65,6 @@ public class Geometry {
 		ebo.bind();
 
 		// associa os dados dos elementos ao EBO
-		var elements = getElementsFrom(vertices);
 		ebo.setElements(elements);
 
 		// usa os 3 primeiros floats para a posição
@@ -100,6 +103,19 @@ public class Geometry {
 
 
 	public static void addVertex(float[] vertices, int offset, float x, float y, Vector3f color) {
+		// inicia no indice 0, com 3 floats para a coordenadas
+		vertices[offset + X_POSITION] = x;
+		vertices[offset + Y_POSITION] = y;
+		vertices[offset + Z_POSITION] = 0.0f;
+		// últimos 3 indices para a cor
+		vertices[offset + RED_POSITION] = color.x;
+		vertices[offset + GREEN_POSITION] = color.y;
+		vertices[offset + BLUE_POSITION] = color.z;
+	}
+
+	public static void addVertexAt(float[] vertices, int index, float x, float y, Vector3f color) {
+		var offset = index * 6;
+
 		// inicia no indice 0, com 3 floats para a coordenadas
 		vertices[offset + X_POSITION] = x;
 		vertices[offset + Y_POSITION] = y;
@@ -178,6 +194,29 @@ public class Geometry {
 		}
 
 		return vertices;
+	}
+
+	public static float[] points(float[] vertices) {
+		int lines = vertices.length / 2;
+		var elements = new float[lines * 6];
+
+		addVertex(vertices, 0, 0, 0, Colors.get());
+
+		for (int i = 0; i < lines; i++) {
+			var color = Colors.get();
+
+			var offset = i * 6;
+
+			elements[offset + X_POSITION] = vertices[i];
+			elements[offset + Y_POSITION] = vertices[i + 1];
+			elements[offset + Z_POSITION] = 0.0f;
+			// últimos 3 indices para a cor
+			elements[offset + RED_POSITION] = color.x;
+			elements[offset + GREEN_POSITION] = color.y;
+			elements[offset + BLUE_POSITION] = color.z;
+		}
+
+		return elements;
 	}
 
 	public static float[] spiral(float centerX, float centerY, int points, float loops, float radius) {
