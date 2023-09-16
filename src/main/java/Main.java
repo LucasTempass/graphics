@@ -5,8 +5,8 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import shaders.Shader;
 
+import static geometry.Geometry.polygon;
 import static geometry.Geometry.setupGeometryWithEBO;
-import static geometry.Geometry.triangleIsosceles;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -97,7 +97,11 @@ public class Main {
 	private void loop() {
 		var shader = new Shader("Vertex.vsh", "Fragment.fsh");
 
-		var triangleVAO = setupGeometryWithEBO(triangleIsosceles(0, 0, 0.5f, 80, 60));
+		var points = 5;
+
+		float[] vertices = polygon(0, 0, 0.5f, points, 90);
+
+		var pentagonVAO = setupGeometryWithEBO(vertices);
 
 		shader.use();
 
@@ -112,11 +116,11 @@ public class Main {
 
 			shader.setVec4("inputColor", 1.0f, 1.0f, 1.0f, 1.0f);
 
-			triangleVAO.bind();
+			pentagonVAO.bind();
 
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+			glDrawElements(GL_TRIANGLES, vertices.length, GL_UNSIGNED_INT, 0);
 
-			triangleVAO.unbind();
+			pentagonVAO.unbind();
 
 			// troca o buffer ativo por aquele que acabamos de desenhar
 			glfwSwapBuffers(window);
