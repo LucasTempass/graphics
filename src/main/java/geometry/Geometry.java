@@ -180,6 +180,28 @@ public class Geometry {
 		return vertices;
 	}
 
+	public static float[] circle(float centerX, float centerY, float radius, int angles, float rotation) {
+		// (centro + pontos) * 6 floats por ponto
+		float[] vertices = new float[(angles + 1) * 6];
+
+		// centro
+		addVertex(vertices, 0, centerX, centerY, Colors.get());
+
+		for (int i = 1; i <= angles; i++) {
+			float theta = i + rotation;
+
+			float cos = (float) Math.cos(Math.toRadians(theta));
+			float sin = (float) Math.sin(Math.toRadians(theta));
+
+			float x = centerX + (radius * cos);
+			float y = centerY + (radius * sin);
+
+			addVertex(vertices, i * 6, x, y, Colors.get());
+		}
+
+		return vertices;
+	}
+
 	public static float[] spiral(float centerX, float centerY, int points, float loops, float radius, float rotation) {
 		float[] vertices = new float[points * 6];
 
@@ -206,7 +228,16 @@ public class Geometry {
 	}
 
 	public enum Colors {
-		PINK(0xFF72AD), PURPLE(0xAD72FF), BLUE(0x72ADFF), CYAN(0x72FFAD), GREEN(0x72FF72), YELLOW(0xFFFF72), ORANGE(0xFFAD72), RED(0xFF7272);
+		WHITE(0xFFFFFF),
+		BLACK(0x000000),
+		PINK(0xFF72AD),
+		PURPLE(0xAD72FF),
+		BLUE(0x72ADFF),
+		CYAN(0x72FFAD),
+		GREEN(0x72FF72),
+		YELLOW(0xFFFF72),
+		ORANGE(0xFFAD72),
+		RED(0xFF7272);
 
 		private static int last = (int) Math.floor(Math.random() * values().length);
 
@@ -226,9 +257,9 @@ public class Geometry {
 			return colors[last].color;
 		}
 
-		public static Vector3f random() {
-			Colors[] colors = values();
-			return colors[(int) (Math.random() * colors.length)].color;
+
+		public Vector3f getColor() {
+			return color;
 		}
 	}
 }
