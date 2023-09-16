@@ -96,13 +96,19 @@ public class Main {
 	private void loop() {
 		var shader = new Shader("Vertex.vsh", "Fragment.fsh");
 
-		float[] vertices = new float[5 * 6];
+		float[] vertices = new float[9 * 6];
 
 		addVertexAt(vertices, 0, -0.5f, 0.5f, Colors.WHITE.getColor());
 		addVertexAt(vertices, 1, -0.5f, -0.5f, Colors.WHITE.getColor());
 		addVertexAt(vertices, 2, 0.5f, -0.5f, Colors.WHITE.getColor());
 		addVertexAt(vertices, 3, 0.5f, 0.5f, Colors.WHITE.getColor());
 		addVertexAt(vertices, 4, 0, 0.9f, Colors.WHITE.getColor());
+		// porta
+		addVertexAt(vertices, 5, -0.25f, -0.5f, Colors.WHITE.getColor());
+		addVertexAt(vertices, 6, 0.25f, -0.5f, Colors.WHITE.getColor());
+		addVertexAt(vertices, 7, 0.25f, 0, Colors.WHITE.getColor());
+		addVertexAt(vertices, 8, -0.25f, 0, Colors.WHITE.getColor());
+
 
 		int[] elements = {
 				0, 1,
@@ -110,7 +116,10 @@ public class Main {
 				1, 2,
 				2, 3,
 				0, 4,
-				3, 4
+				3, 4,
+				5, 8,
+				6, 7,
+				7, 8
 		};
 
 		var vao = setupGeometryWithEBO(vertices, elements);
