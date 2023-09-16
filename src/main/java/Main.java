@@ -5,8 +5,8 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import shaders.Shader;
 
-import static geometry.Geometry.setupGeometry;
-import static geometry.Geometry.triangle;
+import static geometry.Geometry.setupGeometryWithEBO;
+import static geometry.Geometry.triangleIsosceles;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -40,7 +40,7 @@ public class Main {
 
 		// Create the window
 		window = GLFW.glfwCreateWindow(
-				300, 300,
+				800, 800,
 				"Lucas Tempass Cerveira",
 				NULL, NULL
 		);
@@ -97,7 +97,7 @@ public class Main {
 	private void loop() {
 		var shader = new Shader("Vertex.vsh", "Fragment.fsh");
 
-		var triangleVAO = setupGeometry(triangle(0, 0, 0.5f));
+		var triangleVAO = setupGeometryWithEBO(triangleIsosceles(0, 0, 0.5f, 80, 60));
 
 		shader.use();
 
