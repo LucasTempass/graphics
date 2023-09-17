@@ -10,7 +10,8 @@ Este repositório é organizado em **branches aninhadas por tarefa**, onde cada 
 formato ```xx/tarefa/yy```, onde ```yy``` é a tarefa identificada e ```xx``` é o número da lista.
 
 Além disso, cada lista de exercícios pode possuir uma branch central no formato
-```xx/lista```, a qual pode conter código compartilhado entre as tarefas ou instruções adicionais.
+```xx/lista```, a qual pode conter código compartilhado entre as tarefas ou instruções adicionais, além de um arquivo
+```TAREFA.pdf``` com as respostas das tarefas.
 
 ## Como usar
 
@@ -22,6 +23,6 @@ Obs.: Cada branch de lista existe apenas para organizar as tarefas, não é nece
 
 ---
 
-### Lista de Exercícios
+### Branches disponíveis:
 
-* Lista 1 - Pendente
+https://github.com/LucasTempass/graphics/branches/all
