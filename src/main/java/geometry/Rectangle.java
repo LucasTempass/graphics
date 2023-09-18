@@ -6,6 +6,10 @@ import static utils.VertexUtils.addVertexAt;
 
 public class Rectangle {
 
+	private Rectangle() {
+		// classe utilitária
+	}
+
 	private static final int LEFT_UPPER_CORNER = 0;
 	private static final int RIGHT_UPPER_CORNER = 1;
 	private static final int RIGHT_LOWER_CORNER = 2;
