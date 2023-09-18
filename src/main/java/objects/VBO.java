@@ -1,4 +1,4 @@
-package utils;
+package objects;
 
 import static org.lwjgl.opengl.GL15.*;
 
