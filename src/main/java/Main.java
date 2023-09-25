@@ -1,6 +1,8 @@
+import enums.Colors;
 import game.Block;
 import game.Direction;
 import game.Game;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -152,26 +154,32 @@ public class Main {
 						continue;
 					}
 
+					Vector3f color = Colors.WHITE.getColor();
+
 					if (block == Block.FOOD) {
-						shader.setVec4("inputColor", 1.0f, 0.0f, 0.0f, 1.0f);
+						color = Colors.RED.getColor();
+						shader.setVec4("inputColor", color.x, color.y, color.z, 1.0f);
 					}
 
 					if (block == Block.SNAKE_HEAD) {
-						shader.setVec4("inputColor", 0.0f, 0.0f, 1.0f, 1.0f);
+						color = Colors.DARK_GREEN.getColor();
+						shader.setVec4("inputColor", color.x, color.y, color.z, 1.0f);
 					}
 
 					if (block == Block.SNAKE) {
-						shader.setVec4("inputColor", 0.0f, 0.25f, 1.0f, 1.0f);
+						color = Colors.GREEN.getColor();
+						shader.setVec4("inputColor", color.x, color.y, color.z, 1.0f);
 					}
 
 					if (block == Block.WALL) {
-						shader.setVec4("inputColor", 0.0f, 0.0f, 0.0f, 1.0f);
+						color = Colors.BLACK.getColor();
+						shader.setVec4("inputColor", color.x, color.y, color.z, 1.0f);
 					}
 
 					float x = ((float) j / matrix.length) - 0.5f;
 					float y = 0.5f - (float) i / matrix.length;
 
-					var squareVAO = setupGeometryWithEBO(rectangle(x, y, width, height));
+					var squareVAO = setupGeometryWithEBO(rectangle(x, y, width, height, color));
 
 					squareVAO.bind();
 

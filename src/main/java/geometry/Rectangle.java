@@ -1,6 +1,7 @@
 package geometry;
 
 import enums.Colors;
+import org.joml.Vector3f;
 
 import static utils.VertexUtils.addVertexAt;
 
@@ -24,6 +25,18 @@ public class Rectangle {
 		addVertexAt(vertices, RIGHT_LOWER_CORNER, x + width, y, Colors.getRandom());
 		addVertexAt(vertices, RIGHT_UPPER_CORNER, x + width, y + height, Colors.getRandom());
 		addVertexAt(vertices, LEFT_UPPER_CORNER, x, y + height, Colors.getRandom());
+
+		return vertices;
+	}
+
+	public static float[] rectangle(float x, float y, float width, float height, Vector3f color) {
+		var vertices = new float[4 * 6];
+
+		// adiciona um cor aleatória para cada vértice
+		addVertexAt(vertices, LEFT_LOWER_CORNER, x, y, color);
+		addVertexAt(vertices, RIGHT_LOWER_CORNER, x + width, y, color);
+		addVertexAt(vertices, RIGHT_UPPER_CORNER, x + width, y + height, color);
+		addVertexAt(vertices, LEFT_UPPER_CORNER, x, y + height, color);
 
 		return vertices;
 	}
