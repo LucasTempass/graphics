@@ -34,7 +34,7 @@ public class Snake {
 		int[] oldTail = getTail();
 
 		// move o corpo para seguir a cabeça
-		for (int i = 1; i < body.size(); i++) {
+		for (int i = body.size() - 1; i > 0; i--) {
 			body.set(i, body.get(i - 1));
 		}
 
@@ -53,16 +53,16 @@ public class Snake {
 	}
 
 	public void down() {
-		if (dirY == 1) {
+		if (dirY == -1) {
 			return;
 		}
 
 		dirX = 0;
-		dirY = +1;
+		dirY = 1;
 	}
 
 	public void up() {
-		if (dirY == -1) {
+		if (dirY == 1) {
 			return;
 		}
 

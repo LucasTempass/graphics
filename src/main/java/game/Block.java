@@ -1,5 +1,5 @@
 package game;
 
 public enum Block {
-	FOOD, SNAKE, SNAKE_HEAD;
+	FOOD, SNAKE, SNAKE_HEAD, WALL
 }

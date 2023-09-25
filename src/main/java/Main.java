@@ -1,3 +1,6 @@
+import game.Block;
+import game.Direction;
+import game.Game;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -5,7 +8,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import shaders.Shader;
 
-import static geometry.Triangle.triangleIsosceles;
+import static geometry.Rectangle.rectangle;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -14,9 +17,12 @@ import static utils.GeometryUtils.setupGeometryWithEBO;
 
 public class Main {
 
-	private long window;
+	private static final Game GAME = new Game(20, 20);
 
-	public void run() {
+	private static long window;
+	private static int round = 0;
+
+	public static void main(String[] args) {
 		init();
 
 		loop();
@@ -24,7 +30,7 @@ public class Main {
 		cleanUp();
 	}
 
-	private void init() {
+	private static void init() {
 		GLFWErrorCallback.createPrint(System.err).set();
 
 		if (!GLFW.glfwInit()) {
@@ -51,12 +57,31 @@ public class Main {
 
 		// configura o callback de teclado
 		GLFW.glfwSetKeyCallback(window, (currentWindows, key, scancode, action, mods) -> {
-			if (key != GLFW.GLFW_KEY_ESCAPE || action != GLFW.GLFW_RELEASE) {
+			if (key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_RELEASE) {
+				// quando a tecla ESC for pressionada, sinaliza para fechar a janela
+				GLFW.glfwSetWindowShouldClose(currentWindows, true);
 				return;
 			}
 
-			// quando a tecla ESC for pressionada, sinaliza para fechar a janela
-			GLFW.glfwSetWindowShouldClose(currentWindows, true);
+			if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
+				round++;
+			}
+
+			if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+				GAME.onCommand(Direction.LEFT);
+			}
+
+			if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+				GAME.onCommand(Direction.RIGHT);
+			}
+
+			if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+				GAME.onCommand(Direction.UP);
+			}
+
+			if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+				GAME.onCommand(Direction.DOWN);
+			}
 		});
 
 		glfwMakeContextCurrent(window);
@@ -76,10 +101,12 @@ public class Main {
 		// habilita v-sync
 		GLFW.glfwSwapInterval(1);
 
+		glfwWindowHint(GLFW.GLFW_REFRESH_RATE, 24);
+
 		GLFW.glfwShowWindow(window);
 	}
 
-	public void cleanUp() {
+	public static void cleanUp() {
 		Callbacks.glfwFreeCallbacks(window);
 
 		GLFW.glfwDestroyWindow(window);
@@ -89,34 +116,70 @@ public class Main {
 		glfwSetErrorCallback(null).free();
 	}
 
-	public static void main(String[] args) {
-		new Main().run();
-	}
 
-
-	private void loop() {
+	private static void loop() {
 		var shader = new Shader("Vertex.vsh", "Fragment.fsh");
 
-		var triangleVAO = setupGeometryWithEBO(triangleIsosceles(0, 0, 0.5f, 80, 60));
-
 		shader.use();
+
+		int currentRound = 0;
 
 		while (!glfwWindowShouldClose(window)) {
 			// buscar eventos de input
 			glfwPollEvents();
 
-			glClearColor(0.3f, 0.2f, 0.3f, 1f);
+			glClearColor(1f, 1f, 1f, 1f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			glLineWidth(5.0f);
 
-			shader.setVec4("inputColor", 1.0f, 1.0f, 1.0f, 1.0f);
+			Block[][] matrix = GAME.toMatrix();
 
-			triangleVAO.bind();
+			float width = 1.0f / matrix.length;
+			float height = 1.0f / matrix.length;
 
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+			if (currentRound < round) {
+				currentRound++;
+				GAME.play();
+			}
 
-			triangleVAO.unbind();
+			for (int i = 0; i < matrix.length; i++) {
+				for (int j = 0; j < matrix[i].length; j++) {
+					Block block = matrix[i][j];
+
+					if (block == null) {
+						// TODO
+						continue;
+					}
+
+					if (block == Block.FOOD) {
+						shader.setVec4("inputColor", 1.0f, 0.0f, 0.0f, 1.0f);
+					}
+
+					if (block == Block.SNAKE_HEAD) {
+						shader.setVec4("inputColor", 0.0f, 0.0f, 1.0f, 1.0f);
+					}
+
+					if (block == Block.SNAKE) {
+						shader.setVec4("inputColor", 0.0f, 0.25f, 1.0f, 1.0f);
+					}
+
+					if (block == Block.WALL) {
+						shader.setVec4("inputColor", 0.0f, 0.0f, 0.0f, 1.0f);
+					}
+
+					float x = ((float) j / matrix.length) - 0.5f;
+					float y = 0.5f - (float) i / matrix.length;
+
+					var squareVAO = setupGeometryWithEBO(rectangle(x, y, width, height));
+
+					squareVAO.bind();
+
+					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+					squareVAO.unbind();
+				}
+			}
 
 			// troca o buffer ativo por aquele que acabamos de desenhar
 			glfwSwapBuffers(window);
