@@ -2,6 +2,7 @@ import enums.Colors;
 import game.Block;
 import game.Direction;
 import game.Game;
+import game.Timer;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
@@ -21,8 +22,9 @@ public class Main {
 
 	private static final Game GAME = new Game(20, 20);
 
+	private static final Timer timer = new Timer();
+
 	private static long window;
-	private static int round = 0;
 
 	public static void main(String[] args) {
 		init();
@@ -65,10 +67,6 @@ public class Main {
 				return;
 			}
 
-			if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
-				round++;
-			}
-
 			if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
 				GAME.onCommand(Direction.LEFT);
 			}
@@ -103,8 +101,6 @@ public class Main {
 		// habilita v-sync
 		GLFW.glfwSwapInterval(1);
 
-		glfwWindowHint(GLFW.GLFW_REFRESH_RATE, 24);
-
 		GLFW.glfwShowWindow(window);
 	}
 
@@ -124,26 +120,23 @@ public class Main {
 
 		shader.use();
 
-		int currentRound = 0;
-
 		while (!glfwWindowShouldClose(window)) {
 			// buscar eventos de input
 			glfwPollEvents();
+
+			timer.start();
 
 			glClearColor(1f, 1f, 1f, 1f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			glLineWidth(5.0f);
 
+			GAME.play();
+
 			Block[][] matrix = GAME.toMatrix();
 
 			float width = 1.0f / matrix.length;
 			float height = 1.0f / matrix.length;
-
-			if (currentRound < round) {
-				currentRound++;
-				GAME.play();
-			}
 
 			for (int i = 0; i < matrix.length; i++) {
 				for (int j = 0; j < matrix[i].length; j++) {
@@ -189,9 +182,29 @@ public class Main {
 				}
 			}
 
+			timer.stop();
+
+			var elapsed = timer.getDuration();
+
+			// calcula o tempo que deve dormir para manter o FPS
+			var sleepTime = calcSleepTime(5, elapsed);
+
+			if (sleepTime > 0) {
+				try {
+					Thread.sleep((long) sleepTime);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+
 			// troca o buffer ativo por aquele que acabamos de desenhar
 			glfwSwapBuffers(window);
 		}
 	}
 
+
+	private static double calcSleepTime(int fps, double elapsedTime) {
+		// 1 segundo em milisegundos
+		return (1000 / (double) fps) - elapsedTime;
+	}
 }
