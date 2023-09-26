@@ -1,9 +1,7 @@
-import enums.Colors;
 import game.Block;
 import game.Direction;
 import game.Game;
 import game.Timer;
-import org.joml.Vector3f;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -20,7 +18,7 @@ import static utils.GeometryUtils.setupGeometryWithEBO;
 
 public class Main {
 
-	private static final Game GAME = new Game(20, 20);
+	private static final Game GAME = new Game(30, 30);
 
 	private static final Timer timer = new Timer();
 
@@ -50,8 +48,8 @@ public class Main {
 
 		// Create the window
 		window = GLFW.glfwCreateWindow(
-				800, 800,
-				"Lucas Tempass Cerveira",
+				1080, 1080,
+				"The Snake Game",
 				NULL, NULL
 		);
 
@@ -134,45 +132,30 @@ public class Main {
 			GAME.play();
 
 			Block[][] matrix = GAME.toMatrix();
+			float expansionFactor = 1.5f;
 
-			float width = 1.0f / matrix.length;
-			float height = 1.0f / matrix.length;
+			float size = (1.0f / matrix.length) * expansionFactor;
 
 			for (int i = 0; i < matrix.length; i++) {
 				for (int j = 0; j < matrix[i].length; j++) {
 					Block block = matrix[i][j];
 
 					if (block == null) {
-						// TODO
 						continue;
 					}
 
-					Vector3f color = Colors.WHITE.getColor();
+					var color = block.getColor();
 
-					if (block == Block.FOOD) {
-						color = Colors.RED.getColor();
-						shader.setVec4("inputColor", color.x, color.y, color.z, 1.0f);
-					}
+					shader.setVec4("inputColor", color.x, color.y, color.z, 1.0f);
 
-					if (block == Block.SNAKE_HEAD) {
-						color = Colors.DARK_GREEN.getColor();
-						shader.setVec4("inputColor", color.x, color.y, color.z, 1.0f);
-					}
+					// como iniciamos com 1, precisamos subtrair 1 para que o primeiro elemento seja 0
+					float padding = (1 - (2 - expansionFactor) / 2) + size;
 
-					if (block == Block.SNAKE) {
-						color = Colors.GREEN.getColor();
-						shader.setVec4("inputColor", color.x, color.y, color.z, 1.0f);
-					}
+					// inicia com 1 pois quando chegar no último elemento, o valor será 1
+					float x = (((float) (j + 1) / matrix.length) * expansionFactor) - padding;
+					float y = padding - (((float) (i + 1) / matrix.length) * expansionFactor);
 
-					if (block == Block.WALL) {
-						color = Colors.BLACK.getColor();
-						shader.setVec4("inputColor", color.x, color.y, color.z, 1.0f);
-					}
-
-					float x = ((float) j / matrix.length) - 0.5f;
-					float y = 0.5f - (float) i / matrix.length;
-
-					var squareVAO = setupGeometryWithEBO(rectangle(x, y, width, height, color));
+					var squareVAO = setupGeometryWithEBO(rectangle(x, y, size, size, color));
 
 					squareVAO.bind();
 
@@ -187,7 +170,7 @@ public class Main {
 			var elapsed = timer.getDuration();
 
 			// calcula o tempo que deve dormir para manter o FPS
-			var sleepTime = calcSleepTime(5, elapsed);
+			var sleepTime = calcSleepTime(8, elapsed);
 
 			if (sleepTime > 0) {
 				try {

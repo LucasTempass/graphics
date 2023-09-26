@@ -86,22 +86,24 @@ public class Game {
 			matrix[bodyPart[0]][bodyPart[1]] = Block.SNAKE;
 		}
 
-		for (int i = 0; i < width; i++) {
-			matrix[i][0] = Block.WALL;
-			matrix[i][height - 1] = Block.WALL;
-		}
-
-		for (int i = 0; i < height; i++) {
-			matrix[0][i] = Block.WALL;
-			matrix[width - 1][i] = Block.WALL;
-		}
-
 		// adiciona a cabeça
 		var head = snake.getHead();
 		matrix[head[0]][head[1]] = Block.SNAKE_HEAD;
 
 		// adiciona a comida
 		matrix[food[0]][food[1]] = Block.FOOD;
+
+		// adiciona as paredes
+		for (int i = 0; i < width; i++) {
+			matrix[i][0] = Block.WALL;
+			matrix[i][height - 1] = Block.WALL;
+		}
+
+		// adiciona as paredes
+		for (int i = 0; i < height; i++) {
+			matrix[0][i] = Block.WALL;
+			matrix[width - 1][i] = Block.WALL;
+		}
 
 		return matrix;
 	}
