@@ -1,13 +1,14 @@
 package utils;
 
+import enums.VertexProperty;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import static enums.VertexProperty.*;
 
 public class VertexUtils {
 
-	// 3 floats para a posição e 3 floats para a cor
-	public static final int PROPS_VERTEX = 6;
+	public static final int PROPS_VERTEX = VertexProperty.values().length;
 
 	private VertexUtils() {
 		// classe utilitária
@@ -24,9 +25,28 @@ public class VertexUtils {
 		vertices[offset + BLUE.getPosition()] = color.z;
 	}
 
+	public static void addVertex(float[] vertices, int offset, float x, float y, Vector3f color, Vector2f uv) {
+		// inicia no indice 0, com 3 floats para a coordenadas
+		vertices[offset + X.getPosition()] = x;
+		vertices[offset + Y.getPosition()] = y;
+		vertices[offset + Z.getPosition()] = 0.0f;
+		// últimos 3 indices para a cor
+		vertices[offset + RED.getPosition()] = color.x;
+		vertices[offset + GREEN.getPosition()] = color.y;
+		vertices[offset + BLUE.getPosition()] = color.z;
+		// últimos 2 indices para a textura
+		vertices[offset + U.getPosition()] = uv.x;
+		vertices[offset + V.getPosition()] = uv.y;
+	}
+
 	public static void addVertexAt(float[] vertices, int index, float x, float y, Vector3f color) {
 		var indexOffset = index * PROPS_VERTEX;
 		addVertex(vertices, indexOffset, x, y, color);
+	}
+
+	public static void addVertexAt(float[] vertices, int index, float x, float y, Vector3f color, Vector2f uv) {
+		var indexOffset = index * PROPS_VERTEX;
+		addVertex(vertices, indexOffset, x, y, color, uv);
 	}
 
 	public static float[] mergeVertices(float[] v0, float[] v1) {

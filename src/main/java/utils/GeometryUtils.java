@@ -18,6 +18,7 @@ public class GeometryUtils {
 
 	private static final int POSITION_ATTRIBUTE = 0;
 	private static final int COLOR_ATTRIBUTE = 1;
+	private static final int TEXT_ATTRIBUTE = 2;
 
 	public static VAO setupGeometry(float[] vertices) {
 		var vao = new VAO();
@@ -34,6 +35,8 @@ public class GeometryUtils {
 
 		// usa os 3 ultimos floats para a cor
 		vao.setAttribute(COLOR_ATTRIBUTE, 3, GL_FLOAT, getVertexSizeInBytes(), getColorOffsetInBytes());
+
+		vao.setAttribute(TEXT_ATTRIBUTE, 2, GL_FLOAT, getVertexSizeInBytes(), 6 * Float.BYTES);
 
 		vbo.unbind();
 		vao.unbind();
@@ -63,6 +66,8 @@ public class GeometryUtils {
 		vao.setAttribute(POSITION_ATTRIBUTE, 3, GL_FLOAT, getVertexSizeInBytes(), 0);
 
 		vao.setAttribute(COLOR_ATTRIBUTE, 3, GL_FLOAT, getVertexSizeInBytes(), getColorOffsetInBytes());
+
+		vao.setAttribute(TEXT_ATTRIBUTE, 2, GL_FLOAT, getVertexSizeInBytes(), 6 * Float.BYTES);
 
 		vbo.unbind();
 		vao.unbind();

@@ -4,7 +4,9 @@ public enum VertexProperty {
 	// coordenadas
 	X(0), Y(1), Z(2),
 	// cores
-	RED(3), GREEN(4), BLUE(5);
+	RED(3), GREEN(4), BLUE(5),
+	// textura
+	U(6), V(7);
 
 	private final int position;
 

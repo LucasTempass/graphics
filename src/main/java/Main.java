@@ -2,6 +2,7 @@ import game.Block;
 import game.Direction;
 import game.Game;
 import game.Timer;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -9,9 +10,15 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import shaders.Shader;
 
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
 import static geometry.Rectangle.rectangle;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static utils.GeometryUtils.setupGeometryWithEBO;
@@ -24,7 +31,7 @@ public class Main {
 
 	private static long window;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		init();
 
 		loop();
@@ -113,10 +120,14 @@ public class Main {
 	}
 
 
-	private static void loop() {
+	private static void loop() throws IOException {
 		var shader = new Shader("Vertex.vsh", "Fragment.fsh");
 
 		shader.use();
+
+		shader.setText();
+
+		var texture = loadTexture();
 
 		while (!glfwWindowShouldClose(window)) {
 			// buscar eventos de input
@@ -190,4 +201,42 @@ public class Main {
 		// 1 segundo em milisegundos
 		return (1000 / (double) fps) - elapsedTime;
 	}
+
+	private static int loadTexture() throws IOException {
+		var textureObject = glGenTextures();
+		glBindTexture(GL_TEXTURE_2D, textureObject);
+
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		var image = ImageIO.read(new File("src/main/resources/grass-sprite.png"));
+
+
+		int[] pixels = new int[image.getWidth() * image.getHeight()];
+		image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
+
+		ByteBuffer buffer = BufferUtils.createByteBuffer(image.getWidth() * image.getHeight() * 3); //4 for RGBA, 3 for RGB
+
+		for (int y = 0; y < image.getHeight(); y++) {
+			for (int x = 0; x < image.getWidth(); x++) {
+				int pixel = pixels[y * image.getWidth() + x];
+				buffer.put((byte) ((pixel >> 16) & 0xFF));     // Red component
+				buffer.put((byte) ((pixel >> 8) & 0xFF));      // Green component
+				buffer.put((byte) (pixel & 0xFF));               // Blue component
+			}
+		}
+
+		buffer.flip();
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.getWidth(), image.getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, buffer);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		return textureObject;
+	}
+
+
 }

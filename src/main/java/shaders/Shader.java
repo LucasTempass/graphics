@@ -62,4 +62,8 @@ public class Shader {
 	public void setVec4(String name, float x, float y, float z, float w) {
 		glUniform4f(glGetUniformLocation(program, name), x, y, z, w);
 	}
+
+	public void setText() {
+		glUniform1i(glGetUniformLocation(program, "texture1"), 0);
+	}
 }
