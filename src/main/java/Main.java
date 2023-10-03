@@ -1,3 +1,4 @@
+import enums.Colors;
 import game.Block;
 import game.Direction;
 import game.Game;
@@ -18,6 +19,8 @@ import java.nio.ByteBuffer;
 import static geometry.Rectangle.rectangle;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -127,7 +130,9 @@ public class Main {
 
 		shader.setText();
 
-		var texture = loadTexture();
+		var texture = loadTexture("src/main/resources/grass-sprite.png");
+		var texture2 = loadTexture("src/main/resources/snake-sprite.png");
+		var texture3 = loadTexture("src/main/resources/rock.png");
 
 		while (!glfwWindowShouldClose(window)) {
 			// buscar eventos de input
@@ -152,12 +157,15 @@ public class Main {
 					Block block = matrix[i][j];
 
 					if (block == null) {
-						continue;
+						glActiveTexture(GL_TEXTURE0);
+						glBindTexture(GL_TEXTURE_2D, texture);
+					} else if (block == Block.WALL) {
+						glActiveTexture(GL_TEXTURE0);
+						glBindTexture(GL_TEXTURE_2D, texture3);
+					} else {
+						glActiveTexture(GL_TEXTURE0);
+						glBindTexture(GL_TEXTURE_2D, texture2);
 					}
-
-					var color = block.getColor();
-
-					shader.setVec4("inputColor", color.x, color.y, color.z, 1.0f);
 
 					// como iniciamos com 1, precisamos subtrair 1 para que o primeiro elemento seja 0
 					float padding = (1 - (2 - expansionFactor) / 2) + size;
@@ -166,7 +174,7 @@ public class Main {
 					float x = (((float) (j + 1) / matrix.length) * expansionFactor) - padding;
 					float y = padding - (((float) (i + 1) / matrix.length) * expansionFactor);
 
-					var squareVAO = setupGeometryWithEBO(rectangle(x, y, size, size, color));
+					var squareVAO = setupGeometryWithEBO(rectangle(x, y, size, size, Colors.getRandom()));
 
 					squareVAO.bind();
 
@@ -202,7 +210,7 @@ public class Main {
 		return (1000 / (double) fps) - elapsedTime;
 	}
 
-	private static int loadTexture() throws IOException {
+	private static int loadTexture(String pathname) throws IOException {
 		var textureObject = glGenTextures();
 		glBindTexture(GL_TEXTURE_2D, textureObject);
 
@@ -213,8 +221,7 @@ public class Main {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		var image = ImageIO.read(new File("src/main/resources/grass-sprite.png"));
-
+		var image = ImageIO.read(new File(pathname));
 
 		int[] pixels = new int[image.getWidth() * image.getHeight()];
 		image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
