@@ -19,8 +19,6 @@ import java.nio.ByteBuffer;
 import static geometry.Rectangle.rectangle;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -133,6 +131,7 @@ public class Main {
 		var texture = loadTexture("src/main/resources/grass-sprite.png");
 		var texture2 = loadTexture("src/main/resources/snake-sprite.png");
 		var texture3 = loadTexture("src/main/resources/rock.png");
+		var texture4 = loadTexture("src/main/resources/test.png");
 
 		while (!glfwWindowShouldClose(window)) {
 			// buscar eventos de input
@@ -157,14 +156,13 @@ public class Main {
 					Block block = matrix[i][j];
 
 					if (block == null) {
-						glActiveTexture(GL_TEXTURE0);
 						glBindTexture(GL_TEXTURE_2D, texture);
 					} else if (block == Block.WALL) {
-						glActiveTexture(GL_TEXTURE0);
 						glBindTexture(GL_TEXTURE_2D, texture3);
-					} else {
-						glActiveTexture(GL_TEXTURE0);
+					} else if (block == Block.FOOD) {
 						glBindTexture(GL_TEXTURE_2D, texture2);
+					} else {
+						glBindTexture(GL_TEXTURE_2D, texture4);
 					}
 
 					// como iniciamos com 1, precisamos subtrair 1 para que o primeiro elemento seja 0
@@ -174,7 +172,7 @@ public class Main {
 					float x = (((float) (j + 1) / matrix.length) * expansionFactor) - padding;
 					float y = padding - (((float) (i + 1) / matrix.length) * expansionFactor);
 
-					var squareVAO = setupGeometryWithEBO(rectangle(x, y, size, size, Colors.getRandom()));
+					var squareVAO = setupGeometryWithEBO(rectangle(x, y, size, size, Colors.WHITE.getColor()));
 
 					squareVAO.bind();
 
