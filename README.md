@@ -2,27 +2,16 @@
 
 _Lucas Tempass Cerveira_
 
----
-
-## Estrutura
-
-Este repositório é organizado em **branches aninhadas por tarefa**, onde cada exercício é uma branch aninhada a lista no
-formato ```xx/tarefa/yy```, onde ```yy``` é a tarefa identificada e ```xx``` é o número da lista.
-
-Além disso, cada lista de exercícios pode possuir uma branch central no formato
-```xx/lista```, a qual pode conter código compartilhado entre as tarefas ou instruções adicionais, além de um arquivo
-```TAREFA.pdf``` com as respostas das tarefas.
-
 ## Como usar
 
-Faça o clone do repositório e dê _check-out_ na branch da tarefa que deseja executar. Cada branch pode possuir um
-arquivo
-```TAREFA.md```, caso seja necessário alguma instrução adicional.
+Execute o método main no arquivo Main.java, logo após isso será aberto uma janela com o jogo. Ele é uma versão adaptada
+do jogo [Snake](https://pt.wikipedia.org/wiki/Serpente_(jogo_eletr%C3%B4nico)).
 
-Obs.: Cada branch de lista existe apenas para organizar as tarefas, não é necessário fazer _check-out_ nela.
+## Como funciona
 
----
+Para controlar a cobra, utilize as setas do teclado. O objetivo do jogo é comer o máximo de maçãs possíveis, sem colidir
+com as paredes e si mesma. Ao colidir com a parede, a cobra morre e o jogo acaba, exibindo "Game over" no console.
 
-### Branches disponíveis:
+## Como foi feito
 
-https://github.com/LucasTempass/graphics/branches/all
+Esse jogo foi desenvolvido utilizando o Java 17 e a biblioteca [LWJGL](https://www.lwjgl.org/). 
