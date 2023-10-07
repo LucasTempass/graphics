@@ -14,7 +14,6 @@ public enum Colors {
 	ORANGE(0xFFAD72),
 	RED(0xFF7272);
 
-	private static int last = (int) Math.floor(Math.random() * values().length);
 
 	private final Vector3f color;
 
@@ -26,10 +25,11 @@ public enum Colors {
 	}
 
 	public static Vector3f getRandom() {
-		Colors[] colors = values();
-		last++;
-		last %= colors.length;
-		return colors[last].color;
+		var values = values();
+
+		int index = (int) (Math.random() * values.length);
+
+		return values[index].getColor();
 	}
 
 

@@ -1,6 +1,7 @@
 package geometry;
 
 import enums.Colors;
+import org.joml.Vector3f;
 
 import static utils.VertexUtils.addVertexAt;
 
@@ -16,7 +17,7 @@ public class Rectangle {
 	private static final int LEFT_LOWER_CORNER = 3;
 
 
-	public static float[] rectangle(float x, float y, float width, float height) {
+	public static float[] rectangle(float x, float y, float width, float height, Vector3f random) {
 		var vertices = new float[4 * 6];
 
 		// adiciona um cor aleatória para cada vértice

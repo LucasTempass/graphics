@@ -1,3 +1,5 @@
+import enums.Colors;
+import game.Timer;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -5,6 +7,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import shaders.Shader;
 
+import static geometry.Rectangle.rectangle;
 import static geometry.Triangle.triangleIsosceles;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -15,6 +18,8 @@ import static utils.GeometryUtils.setupGeometryWithEBO;
 public class Main {
 
 	private long window;
+
+	private static final Timer timer = new Timer();
 
 	public void run() {
 		init();
@@ -112,15 +117,51 @@ public class Main {
 
 			shader.setVec4("inputColor", 1.0f, 1.0f, 1.0f, 1.0f);
 
-			triangleVAO.bind();
+			int length = 20;
 
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+			float size = 2.0f / length;
 
-			triangleVAO.unbind();
+			timer.start();
+
+			for (int i = 0; i < length; i++) {
+				for (int j = 0; j < length; j++) {
+					var x = -1.0f + i * size;
+
+					var y = -1.0f + j * size;
+
+					float[] rectangle = rectangle(x, y, size, size, Colors.getRandom());
+					var squareVAO = setupGeometryWithEBO(rectangle);
+
+					squareVAO.bind();
+
+					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+					squareVAO.unbind();
+				}
+			}
+
+			timer.stop();
+
+			var elapsed = timer.getDuration();
+
+			// calcula o tempo que deve dormir para manter o FPS
+			var sleepTime = calcSleepTime(1, elapsed);
+
+			if (sleepTime > 0) {
+				try {
+					Thread.sleep((long) sleepTime);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 
 			// troca o buffer ativo por aquele que acabamos de desenhar
 			glfwSwapBuffers(window);
 		}
 	}
 
+	private static double calcSleepTime(int fps, double elapsedTime) {
+		// 1 segundo em milisegundos
+		return (1000 / (double) fps) - elapsedTime;
+	}
 }
