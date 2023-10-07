@@ -115,7 +115,7 @@ public class Main {
 
 			triangleVAO.bind();
 
-			// rotaciona 45 graus
+			// rotaciona em 45 graus
 			float[] rotate45 = {
 					(float) Math.cos(Math.toRadians(45)), (float) Math.sin(Math.toRadians(45)), 0.0f, 0.0f,
 					(float) -Math.sin(Math.toRadians(45)), (float) Math.cos(Math.toRadians(45)), 0.0f, 0.0f,
