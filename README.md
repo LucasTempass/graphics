@@ -4,25 +4,31 @@ _Lucas Tempass Cerveira_
 
 ---
 
-## Estrutura
+## Lista 3
 
-Este repositório é organizado em **branches aninhadas por tarefa**, onde cada exercício é uma branch aninhada a lista no
-formato ```xx/tarefa/yy```, onde ```yy``` é a tarefa identificada e ```xx``` é o número da lista.
+### Questão 1
 
-Além disso, cada lista de exercícios pode possuir uma branch central no formato
-```xx/lista```, a qual pode conter código compartilhado entre as tarefas ou instruções adicionais, além de um arquivo
-```TAREFA.pdf``` com as respostas das tarefas.
+Url da branch do repositório:
+https://github.com/LucasTempass/graphics/tree/tres/tarefa/1
 
-## Como usar
+Imagem:
 
-Faça o clone do repositório e dê _check-out_ na branch da tarefa que deseja executar. Cada branch pode possuir um
-arquivo
-```TAREFA.md```, caso seja necessário alguma instrução adicional.
+![imagem](./src/main/resources/3-1.png)
 
-Obs.: Cada branch de lista existe apenas para organizar as tarefas, não é necessário fazer _check-out_ nela.
+### Questão 2
 
----
+Url da branch do repositório:
+https://github.com/LucasTempass/graphics/tree/tres/tarefa/2
 
-### Branches disponíveis:
+Imagem:
 
-https://github.com/LucasTempass/graphics/branches/all
+![imagem](./src/main/resources/3-2.png)
+
+### Questão 3
+
+Url da branch do repositório:
+https://github.com/LucasTempass/graphics/tree/tres/tarefa/3
+
+Imagem:
+
+![imagem](./src/main/resources/3-3.png)
