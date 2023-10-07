@@ -5,7 +5,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import shaders.Shader;
 
-import static geometry.Triangle.triangleIsosceles;
+import static geometry.Rectangle.rectangle;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -13,6 +13,12 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 import static utils.GeometryUtils.setupGeometryWithEBO;
 
 public class Main {
+
+	private final float step = 0.01f;
+
+	private float translateX = 0.0f;
+	private float translateY = 0.0f;
+
 
 	private long window;
 
@@ -51,12 +57,27 @@ public class Main {
 
 		// configura o callback de teclado
 		GLFW.glfwSetKeyCallback(window, (currentWindows, key, scancode, action, mods) -> {
-			if (key != GLFW.GLFW_KEY_ESCAPE || action != GLFW.GLFW_RELEASE) {
+			if (key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_RELEASE) {
+				// quando a tecla ESC for pressionada, sinaliza para fechar a janela
+				GLFW.glfwSetWindowShouldClose(currentWindows, true);
 				return;
 			}
 
-			// quando a tecla ESC for pressionada, sinaliza para fechar a janela
-			GLFW.glfwSetWindowShouldClose(currentWindows, true);
+			if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+				translateX += step;
+			}
+
+			if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+				translateX -= step;
+			}
+
+			if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+				translateY += step;
+			}
+
+			if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+				translateY -= step;
+			}
 		});
 
 		glfwMakeContextCurrent(window);
@@ -97,7 +118,7 @@ public class Main {
 	private void loop() {
 		var shader = new Shader("Vertex.vsh", "Fragment.fsh");
 
-		var triangleVAO = setupGeometryWithEBO(triangleIsosceles(0, 0, 0.5f, 80, 60));
+		var triangleVAO = setupGeometryWithEBO(rectangle(0.0f, 0.0f, 0.5f, 0.5f));
 
 		shader.use();
 
@@ -112,9 +133,19 @@ public class Main {
 
 			shader.setVec4("inputColor", 1.0f, 1.0f, 1.0f, 1.0f);
 
+			var translate = new float[]{
+					1.0f, 0.0f, 0.0f, 0.0f,
+					0.0f, 1.0f, 0f, 0.0f,
+					0.0f, 0.0f, 1.0f, 0.0f,
+					translateX, translateY, 0.0f, 1.0f
+			};
+
+
+			shader.setMat4("transform", translate);
+
 			triangleVAO.bind();
 
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 			triangleVAO.unbind();
 
