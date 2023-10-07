@@ -62,4 +62,8 @@ public class Shader {
 	public void setVec4(String name, float x, float y, float z, float w) {
 		glUniform4f(glGetUniformLocation(program, name), x, y, z, w);
 	}
+
+	public void setTransform(float[] matrix) {
+		glUniformMatrix4fv(glGetUniformLocation(program, "transform"), false, matrix);
+	}
 }

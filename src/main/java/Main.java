@@ -5,7 +5,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import shaders.Shader;
 
-import static geometry.Triangle.triangleIsosceles;
+import static geometry.Rectangle.rectangle;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -97,7 +97,8 @@ public class Main {
 	private void loop() {
 		var shader = new Shader("Vertex.vsh", "Fragment.fsh");
 
-		var triangleVAO = setupGeometryWithEBO(triangleIsosceles(0, 0, 0.5f, 80, 60));
+		float[] rectangle = rectangle(0.0f, 0.0f, 0.5f, 0.5f);
+		var triangleVAO = setupGeometryWithEBO(rectangle);
 
 		shader.use();
 
@@ -114,13 +115,62 @@ public class Main {
 
 			triangleVAO.bind();
 
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+			// rotaciona 45 graus
+			float[] rotate45 = {
+					(float) Math.cos(Math.toRadians(45)), (float) Math.sin(Math.toRadians(45)), 0.0f, 0.0f,
+					(float) -Math.sin(Math.toRadians(45)), (float) Math.cos(Math.toRadians(45)), 0.0f, 0.0f,
+					0.0f, 0.0f, 1.0f, 0.0f,
+					0f, 0f, 0f, 1f
+			};
+
+			// escala 1.5 vezes
+			float[] scale15 = {
+					1.25f, 0.0f, 0.0f, 0.0f,
+					0.0f, 1.25f, 0.0f, 0.0f,
+					0.0f, 0.0f, 1.25f, 0.0f,
+					0f, 0f, 0f, 1f
+			};
+
+			float[] transform = multiplyMatrix(rotate45, scale15);
+
+			shader.setTransform(transform);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
+			// desenha outro quadrado abaixo do primeiro
+			shader.setTransform(new float[]{
+					1.0f, 0.0f, 0.0f, 0.0f,
+					0.0f, -1.0f, 0.0f, 0.0f,
+					0.0f, 0.0f, -1.0f, 0.0f,
+					0f, 0f, 0f, 1f
+			});
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 			triangleVAO.unbind();
 
 			// troca o buffer ativo por aquele que acabamos de desenhar
 			glfwSwapBuffers(window);
 		}
+	}
+
+	float[] multiplyMatrix(float[] a, float[] b) {
+		float[] result = new float[16];
+
+		int tamanho = 4;
+
+		for (int i = 0; i < tamanho; i++) { // linha
+			for (int j = 0; j < tamanho; j++) { // coluna
+				float sum = 0;
+				for (int k = 0; k < tamanho; k++) {
+					sum += a[i * tamanho + k] * b[k * tamanho + j];
+				}
+				result[i * tamanho + j] = sum;
+			}
+		}
+
+		return result;
 	}
 
 }
